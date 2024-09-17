@@ -1,8 +1,8 @@
 #!/bin/bash
 # Since: April, 2023
 # Author: gvenzl
-# Name: test_container_2320.sh
-# Description: Run container test scripts for Oracle DB Free 23.2
+# Name: test_container_2330.sh
+# Description: Run container test scripts for Oracle DB Free 23.3
 #
 # Copyright 2023 Gerald Venzl
 #
@@ -20,37 +20,13 @@
 
 source ./functions.sh
 
-#######################
-###### 23c TESTS ######
-#######################
+CONTAINER_IMAGE="${1}"
 
 #######################
 ##### Image tests #####
 #######################
 
-runContainerTest "23.2 FULL image" "2320-full" "gvenzl/oracle-free:23.2-full"
-runContainerTest "23 FULL image" "23-full" "gvenzl/oracle-free:23-full"
-runContainerTest "FULL image" "full" "gvenzl/oracle-free:full"
-
-runContainerTest "23.2 FULL FASTSTART image" "2320-full-faststart" "gvenzl/oracle-free:23.2-full-faststart"
-runContainerTest "23 FULL FASTSTART image" "23-full-faststart" "gvenzl/oracle-free:23-full-faststart"
-runContainerTest "FULL FASTSTART image" "full-faststart" "gvenzl/oracle-free:full-faststart"
-
-runContainerTest "23.2 REGULAR image" "2320" "gvenzl/oracle-free:23.2"
-runContainerTest "23 REGULAR image" "23" "gvenzl/oracle-free:23"
-runContainerTest "REGULAR image" "latest" "gvenzl/oracle-free"
-
-runContainerTest "23.2 REGULAR FASTSTART image" "2320-faststart" "gvenzl/oracle-free:23.2-faststart"
-runContainerTest "23 REGULAR FASTSTART image" "23-faststart" "gvenzl/oracle-free:23-faststart"
-runContainerTest "REGULAR FASTSTART image" "latest-faststart" "gvenzl/oracle-free:latest-faststart"
-
-runContainerTest "23.2 SLIM image" "2320-slim" "gvenzl/oracle-free:23.2-slim"
-runContainerTest "23 SLIM image" "23-slim" "gvenzl/oracle-free:23-slim"
-runContainerTest "SLIM image" "slim" "gvenzl/oracle-free:slim"
-
-runContainerTest "23.2 SLIM FASTSTART image" "2320-slim-faststart" "gvenzl/oracle-free:23.2-slim-faststart"
-runContainerTest "23 SLIM FASTSTART image" "23-slim-faststart" "gvenzl/oracle-free:23-slim-faststart"
-runContainerTest "SLIM FASTSTART image" "slim-faststart" "gvenzl/oracle-free:slim-faststart"
+runContainerTest "Image test ${CONTAINER_IMAGE}" "image-test" "${CONTAINER_IMAGE}"
 
 #################################
 ##### Oracle password tests #####
@@ -64,12 +40,12 @@ NO_TEAR_DOWN="true"
 # Let's keep the container name in a var to keep it simple
 CONTAINER_NAME="23-ora-pwd"
 # Let's keep the test name in a var to keep it simple too
-TEST_NAME="23.2 ORACLE_PASSWORD"
+TEST_NAME="ORACLE_PASSWORD ${CONTAINER_IMAGE}"
 # This is what we want to have back from the SQL statement
 EXPECTED_RESULT="OK"
 
 # Spin up container
-runContainerTest "${TEST_NAME}" "${CONTAINER_NAME}" "gvenzl/oracle-free:23.2-full-faststart"
+runContainerTest "${TEST_NAME}" "${CONTAINER_NAME}" "${CONTAINER_IMAGE}"
 
 # Test password, if it works we will get "OK" back from the SQL statement
 result=$(podman exec -i ${CONTAINER_NAME} sqlplus -s system/"${ORA_PWD}" <<EOF
@@ -110,12 +86,12 @@ NO_TEAR_DOWN="true"
 # Let's keep the container name in a var to keep it simple
 CONTAINER_NAME="23-rand-ora-pwd"
 # Let's keep the test name in a var to keep it simple too
-TEST_NAME="23.2 ORACLE_RANDOM_PASSWORD"
+TEST_NAME="ORACLE_RANDOM_PASSWORD ${CONTAINER_IMAGE}"
 # This is what we want to have back from the SQL statement
 EXPECTED_RESULT="OK"
 
 # Spin up container
-runContainerTest "${TEST_NAME}" "${CONTAINER_NAME}" "gvenzl/oracle-free:23.2-faststart"
+runContainerTest "${TEST_NAME}" "${CONTAINER_NAME}" "${CONTAINER_IMAGE}"
 
 # Let's get the password
 rand_pwd=$(podman logs ${CONTAINER_NAME} | grep "ORACLE PASSWORD FOR SYS AND SYSTEM:" | awk '{ print $7 }')
@@ -157,7 +133,7 @@ NO_TEAR_DOWN="true"
 # Let's keep the container name in a var to keep it simple
 CONTAINER_NAME="23-app-user"
 # Let's keep the test name in a var to keep it simple too
-TEST_NAME="23.2 APP_USER & PASSWORD"
+TEST_NAME="APP_USER & PASSWORD ${CONTAINER_IMAGE}"
 # This is what we want to have back from the SQL statement
 EXPECTED_RESULT="Hi from App User"
 # App user
@@ -166,7 +142,7 @@ APP_USER="test_app_user"
 APP_USER_PASSWORD="MyAppUserPassword"
 
 # Spin up container
-runContainerTest "${TEST_NAME}" "${CONTAINER_NAME}" "gvenzl/oracle-free:23.2-slim-faststart"
+runContainerTest "${TEST_NAME}" "${CONTAINER_NAME}" "${CONTAINER_IMAGE}"
 
 # Test the random password, if it works we will get "OK" back from the SQL statement
 result=$(podman exec -i ${CONTAINER_NAME} sqlplus -s "${APP_USER}"/"${APP_USER_PASSWORD}"@//localhost/FREEPDB1 <<EOF
@@ -207,7 +183,7 @@ NO_TEAR_DOWN="true"
 # Let's keep the container name in a var to keep it simple
 CONTAINER_NAME="23-oracle-db"
 # Let's keep the test name in a var to keep it simple too
-TEST_NAME="23.2 ORACLE_DATABASE"
+TEST_NAME="23.4 ORACLE_DATABASE ${CONTAINER_IMAGE}"
 # This is what we want to have back from the SQL statement
 EXPECTED_RESULT="Hi from your Oracle PDB"
 # Oracle PDB (use mixed case deliberately)
@@ -217,7 +193,7 @@ ORA_PWD="MyTestPassword"
 ORA_PWD_CMD="-e ORACLE_PASSWORD=${ORA_PWD}"
 
 # Spin up container
-runContainerTest "${TEST_NAME}" "${CONTAINER_NAME}" "gvenzl/oracle-free:23.2-full-faststart"
+runContainerTest "${TEST_NAME}" "${CONTAINER_NAME}" "${CONTAINER_IMAGE}"
 
 # Test the random password, if it works we will get "OK" back from the SQL statement
 result=$(podman exec -i ${CONTAINER_NAME} sqlplus -s sys/"${ORA_PWD}"@//localhost/"${ORACLE_DATABASE}" as sysdba <<EOF
@@ -259,7 +235,7 @@ NO_TEAR_DOWN="true"
 # Let's keep the container name in a var to keep it simple
 CONTAINER_NAME="23-oracle-db"
 # Let's keep the test name in a var to keep it simple too
-TEST_NAME="23.2 ORACLE_DATABASE & APP_USER"
+TEST_NAME="23.3 ORACLE_DATABASE & APP_USER ${CONTAINER_IMAGE}"
 # This is what we want to have back from the SQL statement
 EXPECTED_RESULT="Hi from your Oracle PDB"
 # App user
@@ -270,13 +246,176 @@ APP_USER_PASSWORD="ThatAppUserPassword1"
 ORACLE_DATABASE="regression_tests"
 
 # Spin up container
-runContainerTest "${TEST_NAME}" "${CONTAINER_NAME}" "gvenzl/oracle-free:23.2-faststart"
+runContainerTest "${TEST_NAME}" "${CONTAINER_NAME}" "${CONTAINER_IMAGE}"
 
 # Test the random password, if it works we will get "OK" back from the SQL statement
 result=$(podman exec -i ${CONTAINER_NAME} sqlplus -s "${APP_USER}"/"${APP_USER_PASSWORD}"@//localhost/"${ORACLE_DATABASE}" <<EOF
    set heading off;
    set echo off;
    set pagesize 0;
+   SELECT '${EXPECTED_RESULT}' FROM dual;
+   exit;
+EOF
+)
+
+# See whether we got "OK" back from our test
+if [ "${result}" == "${EXPECTED_RESULT}" ]; then
+  echo "TEST ${TEST_NAME}: OK";
+  echo "";
+else
+  echo "TEST ${TEST_NAME}: FAILED!";
+  exit 1;
+fi;
+
+# Tear down the container, no longer needed
+tear_down_container "${CONTAINER_NAME}"
+
+# Clean up environment variables, all tests should remain self-contained
+unset CONTAINER_NAME
+unset NO_TEAR_DOWN
+unset TEST_NAME
+unset EXPECTED_RESULT
+unset APP_USER
+unset APP_USER_PASSWORD
+unset ORACLE_DATABASE
+
+#################################################
+##### Oracle Database PDBs + APP_USER test ######
+#################################################
+
+# Tell test method not to tear down container
+NO_TEAR_DOWN="true"
+# Let's keep the container name in a var to keep it simple
+CONTAINER_NAME="23-oracle-db-pdbs"
+# Let's keep the test name in a var to keep it simple too
+TEST_NAME="23.4 MULTIPLE PDBs & APP_USER ${CONTAINER_IMAGE}"
+# This is what we want to have back from the SQL statement
+EXPECTED_RESULT="Hi from your Oracle PDB"
+# App user
+APP_USER="pdb_app_user"
+# App user password
+APP_USER_PASSWORD="AnotherAppUserPassword1"
+# Oracle PDB
+ORACLE_DATABASE="test_pdb1,TEST_PDB2,PDB3"
+
+# Spin up container
+runContainerTest "${TEST_NAME}" "${CONTAINER_NAME}" "${CONTAINER_IMAGE}"
+
+##################
+# PDB: test_pdb1 #
+##################
+# Test the random password, if it works we will get "OK" back from the SQL statement
+result=$(podman exec -i ${CONTAINER_NAME} sqlplus -s "${APP_USER}"/"${APP_USER_PASSWORD}"@//localhost/test_pdb1 <<EOF
+   set heading off;
+   set echo off;
+   set pagesize 0;
+   SELECT '${EXPECTED_RESULT}' FROM dual;
+   exit;
+EOF
+)
+
+# See whether we got "OK" back from our test
+if [ "${result}" == "${EXPECTED_RESULT}" ]; then
+  echo "TEST ${TEST_NAME}: OK";
+  echo "";
+else
+  echo "TEST ${TEST_NAME}: FAILED!";
+  exit 1;
+fi;
+
+##################
+# PDB: test_pdb2 #
+##################
+# Test the random password, if it works we will get "OK" back from the SQL statement
+result=$(podman exec -i ${CONTAINER_NAME} sqlplus -s "${APP_USER}"/"${APP_USER_PASSWORD}"@//localhost/test_pdb2 <<EOF
+   set heading off;
+   set echo off;
+   set pagesize 0;
+   SELECT '${EXPECTED_RESULT}' FROM dual;
+   exit;
+EOF
+)
+
+# See whether we got "OK" back from our test
+if [ "${result}" == "${EXPECTED_RESULT}" ]; then
+  echo "TEST ${TEST_NAME}: OK";
+  echo "";
+else
+  echo "TEST ${TEST_NAME}: FAILED!";
+  exit 1;
+fi;
+
+##################
+# PDB: pdb3      #
+##################
+# Test the random password, if it works we will get "OK" back from the SQL statement
+result=$(podman exec -i ${CONTAINER_NAME} sqlplus -s "${APP_USER}"/"${APP_USER_PASSWORD}"@//localhost/pdb3 <<EOF
+   set heading off;
+   set echo off;
+   set pagesize 0;
+   SELECT '${EXPECTED_RESULT}' FROM dual;
+   exit;
+EOF
+)
+
+# See whether we got "OK" back from our test
+if [ "${result}" == "${EXPECTED_RESULT}" ]; then
+  echo "TEST ${TEST_NAME}: OK";
+  echo "";
+else
+  echo "TEST ${TEST_NAME}: FAILED!";
+  exit 1;
+fi;
+
+# Tear down the container, no longer needed
+tear_down_container "${CONTAINER_NAME}"
+
+# Clean up environment variables, all tests should remain self-contained
+unset CONTAINER_NAME
+unset NO_TEAR_DOWN
+unset TEST_NAME
+unset EXPECTED_RESULT
+unset APP_USER
+unset APP_USER_PASSWORD
+unset ORACLE_DATABASE
+
+################################################
+##### Test for timezone file failure (#23) #####
+################################################
+
+# Tell test method not to tear down container
+NO_TEAR_DOWN="true"
+# Let's keep the container name in a var to keep it simple
+CONTAINER_NAME="timezone-test"
+# Let's keep the test name in a var to keep it simple too
+TEST_NAME="TIMEZONE TEST ${CONTAINER_IMAGE}"
+# This is what we want to have back from the SQL statement
+EXPECTED_RESULT="Hi from your Oracle PDB"
+# App user
+APP_USER="my_test_user"
+# App user password
+APP_USER_PASSWORD="ThatAppUserPassword1"
+# Oracle PDB
+ORACLE_DATABASE="timezone_pdb"
+
+# Spin up container
+runContainerTest "${TEST_NAME}" "${CONTAINER_NAME}" "${CONTAINER_IMAGE}"
+
+# Test the random password, if it works we will get "OK" back from the SQL statement
+result=$(podman exec -i ${CONTAINER_NAME} sqlplus -s "${APP_USER}"/"${APP_USER_PASSWORD}"@//localhost/"${ORACLE_DATABASE}" <<EOF
+   whenever sqlerror exit sql.sqlcode;
+   set heading off;
+   set echo off;
+   set feedback off;
+   set pagesize 0;
+   CREATE TABLE FOO (id INT);
+   INSERT INTO FOO VALUES (1);
+
+   -- This should NOT throw:
+   -- ORA-04088: error during execution of trigger 'SYS.DELETE_ENTRIES'
+   -- ORA-00604: Error occurred at recursive SQL level 1. Check subsequent errors.
+   -- ORA-01804: failure to initialize timezone information
+   DROP TABLE FOO;
    SELECT '${EXPECTED_RESULT}' FROM dual;
    exit;
 EOF

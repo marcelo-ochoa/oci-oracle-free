@@ -1,8 +1,8 @@
 #
-# Since: April, 2023
+# Since: September, 2023
 # Author: gvenzl
-# Name: Dockerfile.232
-# Description: Dockerfile to build Oracle DB 23c Free
+# Name: Dockerfile.23
+# Description: Dockerfile to build Oracle Database 23 Free
 #
 # Copyright 2023 Gerald Venzl
 #
@@ -20,17 +20,19 @@
 
 FROM oraclelinux:8-slim as builder
 
-ARG BUILD_MODE
+ARG BUILD_MODE BUILD_VERSION DB_FLAVOR
 
-ENV ORACLE_BASE=/opt/oracle \
-    ORACLE_BASE_CONFIG=/opt/oracle/product/23c/dbhomeFree \
-    ORACLE_BASE_HOME=/opt/oracle/product/23c/dbhomeFree \
-    ORACLE_HOME=/opt/oracle/product/23c/dbhomeFree \
+ENV OCI_IMAGE_VERSION=${BUILD_VERSION} \
+    OCI_IMAGE_FLAVOR=${BUILD_MODE} \
+    ORACLE_BASE=/opt/oracle \
+    ORACLE_BASE_CONFIG=/opt/oracle/product/23${DB_FLAVOR}/dbhomeFree \
+    ORACLE_BASE_HOME=/opt/oracle/product/23${DB_FLAVOR}/dbhomeFree \
+    ORACLE_HOME=/opt/oracle/product/23${DB_FLAVOR}/dbhomeFree \
     ORACLE_SID=FREE \
-    PATH=${PATH}:/opt/oracle/product/23c/dbhomeFree/bin:/opt/oracle \
+    PATH=${PATH}:/opt/oracle/product/23${DB_FLAVOR}/dbhomeFree/bin:/opt/oracle \
     NLS_LANG=.AL32UTF8
 
-COPY oracle-database-free-23c-1.0-1.el8.x86_64.rpm install.23.sh container-entrypoint.sh resetPassword createAppUser healthcheck.sh /install/
+COPY oracle-database-free-23${DB_FLAVOR}-${BUILD_VERSION}-1.0-1.el8.x86_64.rpm install.23.sh container-entrypoint.sh resetPassword createAppUser createDatabase healthcheck.sh /install/
 
 RUN /install/install.23.sh "${BUILD_MODE}"
 
@@ -40,13 +42,15 @@ RUN /install/install.23.sh "${BUILD_MODE}"
 
 FROM scratch as os_layer
 
+ARG DB_FLAVOR
+
 # Redefine environment variables, etc. as we copied everything from an empty image (scratch)
 ENV ORACLE_BASE=/opt/oracle \
-    ORACLE_BASE_CONFIG=/opt/oracle/product/23c/dbhomeFree \
-    ORACLE_BASE_HOME=/opt/oracle/product/23c/dbhomeFree \
-    ORACLE_HOME=/opt/oracle/product/23c/dbhomeFree \
+    ORACLE_BASE_CONFIG=/opt/oracle/product/23${DB_FLAVOR}/dbhomeFree \
+    ORACLE_BASE_HOME=/opt/oracle/product/23${DB_FLAVOR}/dbhomeFree \
+    ORACLE_HOME=/opt/oracle/product/23${DB_FLAVOR}/dbhomeFree \
     ORACLE_SID=FREE \
-    PATH=${PATH}:/opt/oracle/product/23c/dbhomeFree/bin:/opt/oracle \
+    PATH=${PATH}:/opt/oracle/product/23${DB_FLAVOR}/dbhomeFree/bin:/opt/oracle \
     NLS_LANG=.AL32UTF8
 
 COPY --from=builder / /
@@ -97,6 +101,17 @@ COPY --from=builder --chown=oracle:oinstall "${ORACLE_HOME}"/rdbms "${ORACLE_HOM
 FROM oracle_rdbms as db_files
 
 COPY --from=builder --chown=oracle:oinstall "${ORACLE_BASE}"/"${ORACLE_SID}".7z  "${ORACLE_BASE}"/
+
+##########################################################################################
+### Finalize (reset permissions for root owned files, set label, user, etc.)
+##########################################################################################
+
+RUN chown root "${ORACLE_HOME}"/bin/extjob; \
+    chmod 4750 "${ORACLE_HOME}"/bin/extjob; \
+    chown root "${ORACLE_HOME}"/rdbms/admin/externaljob.ora; \
+    chmod 640 "${ORACLE_HOME}"/rdbms/admin/externaljob.ora; \
+    chown root "${ORACLE_HOME}"/bin/jssu; \
+    chmod 4750 "${ORACLE_HOME}"/bin/jssu
 
 LABEL org.opencontainers.image.source https://github.com/gvenzl/oci-oracle-free
 

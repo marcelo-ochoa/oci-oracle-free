@@ -5,9 +5,18 @@ Oracle Database Free Container / Docker images.
 
 # Supported tags and respective `Dockerfile` links
 
-* [`latest`, `23`, `23.2`](https://github.com/gvenzl/oci-oracle-free/blob/main/Dockerfile.232), [`latest-faststart`, `23-faststart`, `23.2-faststart`](https://github.com/gvenzl/oci-oracle-free/blob/main/Dockerfile.faststart)
-* [`slim`, `23-slim`, `23.2-slim`](https://github.com/gvenzl/oci-oracle-free/blob/main/Dockerfile.232), [`slim-faststart`, `23-slim-faststart`, `23.2-slim-faststart`](https://github.com/gvenzl/oci-oracle-free/blob/main/Dockerfile.faststart)
-* [`full`, `23-full`, `23.2-full`](https://github.com/gvenzl/oci-oracle-free/blob/main/Dockerfile.232), [`full-faststart`, `23-full-faststart`, `23.2-full-faststart`](https://github.com/gvenzl/oci-oracle-free/blob/main/Dockerfile.faststart)
+* [`latest`, `23`, `23.5`](https://github.com/gvenzl/oci-oracle-free/blob/main/Dockerfile.23), [`latest-faststart`, `23-faststart`, `23.5-faststart`](https://github.com/gvenzl/oci-oracle-free/blob/main/Dockerfile.faststart)
+* [`slim`, `23-slim`, `23.5-slim`](https://github.com/gvenzl/oci-oracle-free/blob/main/Dockerfile.23), [`slim-faststart`, `23-slim-faststart`, `23.5-slim-faststart`](https://github.com/gvenzl/oci-oracle-free/blob/main/Dockerfile.faststart)
+* [`full`, `23-full`, `23.5-full`](https://github.com/gvenzl/oci-oracle-free/blob/main/Dockerfile.23), [`full-faststart`, `23-full-faststart`, `23.5-full-faststart`](https://github.com/gvenzl/oci-oracle-free/blob/main/Dockerfile.faststart)
+* [`23.4`](https://github.com/gvenzl/oci-oracle-free/blob/main/Dockerfile.23), [`23.4-faststart`](https://github.com/gvenzl/oci-oracle-free/blob/main/Dockerfile.faststart)
+* [`23.4-slim`](https://github.com/gvenzl/oci-oracle-free/blob/main/Dockerfile.23), [`23.4-slim-faststart`](https://github.com/gvenzl/oci-oracle-free/blob/main/Dockerfile.faststart)
+* [`23.4-full`](https://github.com/gvenzl/oci-oracle-free/blob/main/Dockerfile.23), [`23.4-full-faststart`](https://github.com/gvenzl/oci-oracle-free/blob/main/Dockerfile.faststart)
+* [`23.3`](https://github.com/gvenzl/oci-oracle-free/blob/main/Dockerfile.23), [`23.3-faststart`](https://github.com/gvenzl/oci-oracle-free/blob/main/Dockerfile.faststart)
+* [`23.3-slim`](https://github.com/gvenzl/oci-oracle-free/blob/main/Dockerfile.23), [`23.3-slim-faststart`](https://github.com/gvenzl/oci-oracle-free/blob/main/Dockerfile.faststart)
+* [`23.3-full`](https://github.com/gvenzl/oci-oracle-free/blob/main/Dockerfile.23), [`23.3-full-faststart`](https://github.com/gvenzl/oci-oracle-free/blob/main/Dockerfile.faststart)
+* [`23.2`](https://github.com/gvenzl/oci-oracle-free/blob/main/Dockerfile.23), [`23.2-faststart`](https://github.com/gvenzl/oci-oracle-free/blob/main/Dockerfile.faststart)
+* [`23.2-slim`](https://github.com/gvenzl/oci-oracle-free/blob/main/Dockerfile.23), [`23.3-slim-faststart`](https://github.com/gvenzl/oci-oracle-free/blob/main/Dockerfile.faststart)
+* [`23.2-full`](https://github.com/gvenzl/oci-oracle-free/blob/main/Dockerfile.23), [`23.2-full-faststart`](https://github.com/gvenzl/oci-oracle-free/blob/main/Dockerfile.faststart)
 
 # Quick Start
 
@@ -30,7 +39,7 @@ docker exec <container name|id> resetPassword <your password>
 ```
 
 ## Oracle Database Free on Apple M chips
-Currently, there is no Oracle Database port for ARM chips, hence Oracle Database Free images cannot run on the new Apple M chips via Docker Desktop.  
+Currently, there is no Oracle Database Free port for ARM chips, hence Oracle Database Free images cannot run on the new Apple M chips via Docker Desktop.  
 Fortunately, there are other technologies that can spin up `x86_64` software on Apple M chips, such as [colima](https://github.com/abiosoft/colima). To run these Oracle Database Free images on Apple M hardware, follow these simple steps:
 
 * Install colima ([instructions](https://github.com/abiosoft/colima#installation))
@@ -44,8 +53,12 @@ We are proud of the following users of these images:
 * [Benthos](https://benthos.dev/) [[`c29f81d`](https://github.com/benthosdev/benthos/pull/1949/commits/c29f81d6b767c8ce8394111ee8649389c871ec1c)]
 * [Hibernate Reactive](https://hibernate.org/reactive/) [[`0af4ebc`]](https://github.com/hibernate/hibernate-reactive/commit/0af4ebc9390d631c4e97032452344444e5455834)
 * [Ibis](https://ibis-project.org/) [[`b568a81`](https://github.com/ibis-project/ibis/pull/6126/commits/b568a8152ff1ad1724d374e35bde4907fd7e6ea4)]
+* [jOOQ](https://www.jooq.org/) [[`Twitter`](https://twitter.com/lukaseder/status/1695419767652229268)]
 * [Quarkus](https://quarkus.io/) [[`546922c`](https://github.com/quarkusio/quarkus/commit/546922cf13b4de2d84966550577c0f22ef27000c)]
+* [Ruby on Rails ActiveRecord adapter](https://github.com/rsim/oracle-enhanced) [[`deb214d`](https://github.com/rsim/oracle-enhanced/commit/deb214decc3799608c8be386e91c6c7531c59793)]
 * [Spring Data](https://spring.io/projects/spring-data) [[`3cac9d1`](https://github.com/spring-projects/spring-data-relational/commit/3cac9d145618a073736393b62961c94dae77117f)]
+* [Micronaut](https://micronaut-projects.github.io/micronaut-test-resources/latest/guide/) [[`37882de`](https://github.com/micronaut-projects/micronaut-test-resources/commit/37882dec85657df1a3661f7eea1a8bc0dce124ff)]
+* [utPLSQL](http://utplsql.org/) [[`0497dcf`](https://github.com/utPLSQL/utPLSQL/commit/0497dcfadcac637d186fdbc0aa36338d178f597d)]
 
 If you are using these images and would like to be listed as well, please open an [issue on GitHub](https://github.com/gvenzl/oci-oracle-free/issues) or reach out on [Twitter](https://twitter.com/geraldvenzl).
 
@@ -62,8 +75,9 @@ This variable is mandatory for the first container startup and specifies the pas
 This is an optional variable. Set this variable to a non-empty value, like `yes`, to generate a random initial password for the `SYS` and `SYSTEM` users. The generated password will be printed to stdout (`ORACLE PASSWORD FOR SYS AND SYSTEM: ...`).
 
 ### `ORACLE_DATABASE`
-This is an optional variable. Set this variable to a non-empty string to create a new pluggable database with the name specified in this variable.  
-**Note:** creating a new database will add to the initial container startup time. If you do not want that additional startup time, use the already existing `FREEPDB1` database instead.
+This is an optional variable. Set this variable to a non-empty string to create a new pluggable database with the name specified in this variable. Multiple pluggable databases are created when separating multiple names with a comma, for example, `ORACLE_DATABASE=PDB1,PDB2,PDB3`.
+
+**Note:** creating a new pluggable database will add to the initial container startup time. If you do not want that additional startup time, use the already existing `FREEPDB1` database instead.
 
 ### `APP_USER`
 This is an optional variable. Set this variable to a non-empty string to create a new database schema user with the name specified in this variable. For 18c and onwards, the user will be created in the default `FREEPDB1` pluggable database. If `ORACLE_DATABASE` has been specified, the user will also be created in that pluggable database. This variable requires `APP_USER_PASSWORD` or `APP_USER_PASSWORD_FILE` to be specified as well.
@@ -119,6 +133,49 @@ If you amend the variables above, here is some more useful info:
 * Database App User: `$APP_USER`
 * Database App User Password: `$APP_USER_PASSWORD`
 * Example JDBC connect string with dynamic port allocation: `jdbc:oracle:thin:@localhost:${{ job.services.oracle.ports[1521] }}/FREEPDB1`
+
+## Docker Compose
+The images can be used in a [Docker Compose](https://docs.docker.com/compose/) setup to provide a local development database or facilitate automated testing. Below is an example service definition for your Docker Compose YAML file:
+
+```yaml
+  version: "3.8"
+  services:
+    # Name of the Docker Compose service
+    oracle:
+      # Docker Hub image (feel free to change the tag "latest" to any other available one)
+      image: gvenzl/oracle-free:latest
+      # Forward Oracle port to localhost
+      ports:
+        - "1521:1521"
+      # Provide passwords and other environment variables to the container
+      environment:
+        ORACLE_PASSWORD: sys_user_password
+        APP_USER: my_user
+        APP_USER_PASSWORD: password_i_should_change
+      # Customize healthcheck script options for startup
+      healthcheck:
+        test: ["CMD", "healthcheck.sh"]
+        interval: 10s
+        timeout: 5s
+        retries: 10
+        start_period: 5s
+        start_interval: 5s
+      # Mount a local SQL file to initialize your schema at startup
+      volumes:
+        - my-init.sql:/container-entrypoint-initdb.d/my-init.sql:ro
+```
+
+After your container is up and running, you can connect to it via the following properties:
+
+* Hostname:
+  * `oracle` (from within another service defined in the compose file)
+  * `localhost` or `127.0.0.1` (from the host directly)
+* Port: `1521`
+* Service name: `FREEPDB1`
+* Database App User: `my_user`
+* Database App Password: `password_i_should_change`
+
+To know more about initialization scripts, please refer to the [Initialization scripts section](#initialization-scripts).
 
 # Image flavors
 
@@ -284,7 +341,7 @@ DATABASE IS READY TO USE!
 As a result, one can then connect to the new schema directly:
 
 ```shell
-[gvenzl@localhost init_scripts]$  sql test/test@//localhost/FREEPDB1
+[gvenzl@localhost init_scripts]$ sqlplus test/test@//localhost/FREEPDB1
 
 SQL> select * from countries where name = 'Austria';
 
