@@ -18,7 +18,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM oraclelinux:8-slim as builder
+FROM oraclelinux:8-slim AS builder
 
 ARG BUILD_MODE BUILD_VERSION DB_FLAVOR
 
@@ -32,7 +32,7 @@ ENV OCI_IMAGE_VERSION=${BUILD_VERSION} \
     PATH=${PATH}:/opt/oracle/product/23${DB_FLAVOR}/dbhomeFree/bin:/opt/oracle \
     NLS_LANG=.AL32UTF8
 
-COPY oracle-database-free-23${DB_FLAVOR}-${BUILD_VERSION}-1.0-1.el8.x86_64.rpm install.23.sh container-entrypoint.sh resetPassword createAppUser createDatabase healthcheck.sh /install/
+COPY oracle-database-free-23${DB_FLAVOR}-1.0-1.el8.aarch64.rpm install.23.sh container-entrypoint.sh resetPassword createAppUser createDatabase healthcheck.sh /install/
 
 RUN /install/install.23.sh "${BUILD_MODE}"
 
@@ -40,7 +40,7 @@ RUN /install/install.23.sh "${BUILD_MODE}"
 ### Layer 1 --> Core OS
 ##########################################################################################
 
-FROM scratch as os_layer
+FROM scratch AS os_layer
 
 ARG DB_FLAVOR
 
@@ -74,7 +74,7 @@ RUN rm    "${ORACLE_BASE}"/"${ORACLE_SID}".7z
 ### Layer 3 --> Oracle binary (bin/oracle)
 ##########################################################################################
 
-FROM oracle_home as oracle_binary
+FROM oracle_home AS oracle_binary
 
 COPY --from=builder --chown=oracle:oinstall "${ORACLE_HOME}"/bin/oracle "${ORACLE_HOME}"/bin/oracle
 
@@ -82,7 +82,7 @@ COPY --from=builder --chown=oracle:oinstall "${ORACLE_HOME}"/bin/oracle "${ORACL
 ### Layer 4 --> Oracle lib
 ##########################################################################################
 
-FROM oracle_binary as oracle_lib
+FROM oracle_binary AS oracle_lib
 
 COPY --from=builder --chown=oracle:oinstall "${ORACLE_HOME}"/lib "${ORACLE_HOME}"/lib
 
@@ -90,7 +90,7 @@ COPY --from=builder --chown=oracle:oinstall "${ORACLE_HOME}"/lib "${ORACLE_HOME}
 ### Layer 5 --> Oracle lib
 ##########################################################################################
 
-FROM oracle_lib as oracle_rdbms
+FROM oracle_lib AS oracle_rdbms
 
 COPY --from=builder --chown=oracle:oinstall "${ORACLE_HOME}"/rdbms "${ORACLE_HOME}"/rdbms
 
@@ -98,7 +98,7 @@ COPY --from=builder --chown=oracle:oinstall "${ORACLE_HOME}"/rdbms "${ORACLE_HOM
 ### Layer 6 --> Oracle (compressed) db files
 ##########################################################################################
 
-FROM oracle_rdbms as db_files
+FROM oracle_rdbms AS db_files
 
 COPY --from=builder --chown=oracle:oinstall "${ORACLE_BASE}"/"${ORACLE_SID}".7z  "${ORACLE_BASE}"/
 
@@ -113,7 +113,7 @@ RUN chown root "${ORACLE_HOME}"/bin/extjob; \
     chown root "${ORACLE_HOME}"/bin/jssu; \
     chmod 4750 "${ORACLE_HOME}"/bin/jssu
 
-LABEL org.opencontainers.image.source https://github.com/gvenzl/oci-oracle-free
+LABEL org.opencontainers.image.source https://github.com/marcelo-ochoa/oci-oracle-free
 
 USER oracle
 WORKDIR ${ORACLE_BASE}

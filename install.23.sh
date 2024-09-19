@@ -57,18 +57,20 @@ microdnf -y install libnsl glibc glibc-devel libaio libgcc libstdc++ xz
 
 # Install fortran runtime for libora_netlib.so (so that the Intel Math Kernel libraries are no longer needed)
 if [ "${BUILD_MODE}" == "REGULAR" ] || [ "${BUILD_MODE}" == "SLIM" ]; then
-  microdnf -y install compat-libgfortran-48
+  microdnf -y install libgfortran
 fi;
 
 # Install container runtime specific packages
 # (used by the entrypoint script, not the database itself)
 # TODO: replace with 7zip
-microdnf -y install zip unzip gzip
+microdnf -y install zip unzip gzip oracle-database-preinstall-23*
 
 # Install 7zip
 mkdir /tmp/7z
 cd /tmp/7z
-curl -s -L -O https://www.7-zip.org/a/7z2201-linux-x64.tar.xz
+if [ "$(arch)" == "x86_64" ]; then Z_PKG=7z2201-linux-x64.tar.xz; fi
+if [ "$(arch)" == "aarch64" ]; then Z_PKG=7z2201-linux-arm64.tar.xz; fi
+curl -s -L -O https://www.7-zip.org/a/$Z_PKG
 tar xf 7z*xz
 mv 7zzs /usr/bin/
 mv License.txt /usr/share/
@@ -82,7 +84,7 @@ rm -rf /tmp/7z
 echo "BUILDER: installing database binaries"
 
 # Install Oracle Free
-rpm -iv --nodeps /install/oracle-database-free-23*1.0-1.el8.x86_64.rpm
+rpm -iv --nodeps /install/oracle-database-free-23*1.0-1.el8.$(arch).rpm
 
 # Set 'oracle' user home directory to ${ORACE_BASE}
 usermod -d "${ORACLE_BASE}" oracle
@@ -109,7 +111,7 @@ ORACLE_PASSWORD=$(date '+%s' | sha256sum | base64 | head -c 8)
 su -p oracle -c "lsnrctl stop"
 
 # Re-enable netca
-mv "${ORACLE_HOME}"/bin/netca.bak "${ORACLE_HOME}"/bin/netca
+#mv "${ORACLE_HOME}"/bin/netca.bak "${ORACLE_HOME}"/bin/netca
 
 echo "BUILDER: post config database steps"
 
@@ -2068,9 +2070,6 @@ if [ "${BUILD_MODE}" == "REGULAR" ] || [ "${BUILD_MODE}" == "SLIM" ]; then
   rm -r "${ORACLE_HOME}"/jlib
   rm -r "${ORACLE_HOME}"/ucp
 
-  # Remove Intel's Math kernel libraries
-  rm "${ORACLE_HOME}"/lib/libmkl_*
-
   # Remove zip artifacts in $ORACLE_HOME/lib
   rm "${ORACLE_HOME}"/lib/*.zip
 
@@ -2129,9 +2128,6 @@ if [ "${BUILD_MODE}" == "REGULAR" ] || [ "${BUILD_MODE}" == "SLIM" ]; then
   # Remove opmn directory
   rm -r "${ORACLE_HOME}"/opmn
 
-  # Remove oml4py directory
-  rm -r "${ORACLE_HOME}"/oml4py
-
   # Remove python directory
   rm -r "${ORACLE_HOME}"/python
 
@@ -2143,10 +2139,7 @@ if [ "${BUILD_MODE}" == "REGULAR" ] || [ "${BUILD_MODE}" == "SLIM" ]; then
   rm "${ORACLE_HOME}"/bin/amdu        # ASM Disk Utility
   rm "${ORACLE_HOME}"/bin/dg4*        # Database Gateway
   rm "${ORACLE_HOME}"/bin/dgmgrl      # Data Guard Manager CLI
-  rm "${ORACLE_HOME}"/bin/dbnest*     # DataBase NEST
   rm "${ORACLE_HOME}"/bin/orion       # ORacle IO Numbers benchmark tool
-  rm "${ORACLE_HOME}"/bin/oms_daemon  # Oracle Memory Speed (PMEM support) daemon
-  rm "${ORACLE_HOME}"/bin/omsfscmds   # Oracle Memory Speed command line utility
   rm "${ORACLE_HOME}"/bin/proc        # Pro*C/C++ Precompiler
   rm "${ORACLE_HOME}"/bin/procob      # Pro COBOL Precompiler
   rm "${ORACLE_HOME}"/bin/renamedg    # Rename Disk Group binary
@@ -2214,9 +2207,6 @@ if [ "${BUILD_MODE}" == "REGULAR" ] || [ "${BUILD_MODE}" == "SLIM" ]; then
     # Remove ord directory
     rm -r "${ORACLE_HOME}"/ord
 
-    # Remove Oracle R
-    rm -r "${ORACLE_HOME}"/R
-
     # Remove deinstall directory
     rm -r "${ORACLE_HOME}"/deinstall
 
@@ -2229,14 +2219,12 @@ if [ "${BUILD_MODE}" == "REGULAR" ] || [ "${BUILD_MODE}" == "SLIM" ]; then
     # Remove unnecessary binaries
     rm "${ORACLE_HOME}"/bin/cursize    # Cursor Size binary
     rm "${ORACLE_HOME}"/bin/dbfs*      # DataBase File System
-    rm "${ORACLE_HOME}"/bin/ORE        # Oracle R Enterprise
     rm "${ORACLE_HOME}"/lib/libmle.so  # Multilingual Engine
     rm "${ORACLE_HOME}"/bin/rman       # Oracle Recovery Manager
     rm "${ORACLE_HOME}"/bin/wrap       # PL/SQL Wrapper
 
     # Remove unnecessary libraries
     rm "${ORACLE_HOME}"/lib/asm*       # Oracle Automatic Storage Management
-    rm "${ORACLE_HOME}"/lib/ore.so     # Oracle R Enterprise
 
   fi;
 

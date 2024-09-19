@@ -20,16 +20,16 @@
 
 ARG BASE_IMAGE
 
-FROM ${BASE_IMAGE} as base
+FROM ${BASE_IMAGE} AS base
 
-FROM base as cdb_pdb_seed
+FROM base AS cdb_pdb_seed
 
 # Extract all files except system*.dbf and sysaux*.dbf
 
 RUN 7zzs x "${ORACLE_BASE}"/"${ORACLE_SID}".7z -x\!"${ORACLE_SID}/system*.dbf" -x\!"${ORACLE_SID}/sysaux*.dbf" -o"${ORACLE_BASE}"/oradata/ > /dev/null
 RUN rm "${ORACLE_SID}.7z"
 
-FROM cdb_pdb_seed as cdb_sysaux
+FROM cdb_pdb_seed AS cdb_sysaux
 
 COPY --from=base "${ORACLE_BASE}"/"${ORACLE_SID}".7z "${ORACLE_BASE}"/"${ORACLE_SID}".7z
 
@@ -37,7 +37,7 @@ COPY --from=base "${ORACLE_BASE}"/"${ORACLE_SID}".7z "${ORACLE_BASE}"/"${ORACLE_
 RUN 7zzs x "${ORACLE_BASE}"/"${ORACLE_SID}".7z "${ORACLE_SID}/sysaux*.dbf" -o"${ORACLE_BASE}"/oradata/ > /dev/null
 RUN rm "${ORACLE_SID}.7z"
 
-FROM cdb_sysaux as cdb_system
+FROM cdb_sysaux AS cdb_system
 
 COPY --from=base "${ORACLE_BASE}"/"${ORACLE_SID}".7z "${ORACLE_BASE}"/"${ORACLE_SID}".7z
 
@@ -45,4 +45,4 @@ COPY --from=base "${ORACLE_BASE}"/"${ORACLE_SID}".7z "${ORACLE_BASE}"/"${ORACLE_
 RUN 7zzs x "${ORACLE_BASE}"/"${ORACLE_SID}".7z "${ORACLE_SID}/system*.dbf" -o"${ORACLE_BASE}"/oradata/ > /dev/null
 RUN rm "${ORACLE_SID}.7z"
 
-LABEL org.opencontainers.image.source https://github.com/gvenzl/oci-oracle-free
+LABEL org.opencontainers.image.source https://github.com/marcelo-ochoa/oci-oracle-free

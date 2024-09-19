@@ -25,7 +25,7 @@ set -Eeuo pipefail
 
 VERSION="23.5"
 IMAGE_FLAVOR="REGULAR"
-IMAGE_NAME="gvenzl/oracle-free"
+IMAGE_NAME="mochoa/oracle-free-$(arch)"
 SKIP_CHECKSUM="false"
 FASTSTART="false"
 BASE_IMAGE=""
@@ -127,7 +127,7 @@ IMAGE_NAME="${IMAGE_NAME}:${VERSION}"
 
 # Add image flavor to the tag (regular has no tag)
 if [ "${IMAGE_FLAVOR}" != "REGULAR" ]; then
-  IMAGE_NAME="${IMAGE_NAME}-${IMAGE_FLAVOR,,}"
+  IMAGE_NAME=$(echo "${IMAGE_NAME}-${IMAGE_FLAVOR}" | tr '[:upper:]' '[:lower:]')
 fi;
 
 # Add faststart tag to image and set Dockerfile
@@ -141,8 +141,8 @@ echo "BUILDER: building image $IMAGE_NAME"
 
 BUILD_START_TMS=$(date '+%s')
 
-buildah bud -f "$DOCKER_FILE" -t "${IMAGE_NAME}" --build-arg BUILD_MODE="${IMAGE_FLAVOR}" --build-arg BASE_IMAGE="${BASE_IMAGE}" \
-                                                 --build-arg BUILD_VERSION="${VERSION}"   --build-arg DB_FLAVOR="${DB_FLAVOR}"
+docker buildx build --load -f "$DOCKER_FILE" -t "${IMAGE_NAME}" --build-arg BUILD_MODE="${IMAGE_FLAVOR}" --build-arg BASE_IMAGE="${BASE_IMAGE}" \
+                                                 --build-arg BUILD_VERSION="${VERSION}"   --build-arg DB_FLAVOR="${DB_FLAVOR}" .
 
 BUILD_END_TMS=$(date '+%s')
 BUILD_DURATION=$(( BUILD_END_TMS - BUILD_START_TMS ))
