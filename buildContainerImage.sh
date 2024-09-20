@@ -142,7 +142,7 @@ echo "BUILDER: building image $IMAGE_NAME"
 BUILD_START_TMS=$(date '+%s')
 
 docker buildx build --load -f "$DOCKER_FILE" -t "${IMAGE_NAME}" --build-arg BUILD_MODE="${IMAGE_FLAVOR}" --build-arg BASE_IMAGE="${BASE_IMAGE}" \
-                                                 --build-arg BUILD_VERSION="${VERSION}"   --build-arg DB_FLAVOR="${DB_FLAVOR}" .
+                                                 --build-arg BUILD_VERSION="${VERSION}"  --build-arg BUILD_ARCH="$(arch)"  --build-arg DB_FLAVOR="${DB_FLAVOR}" .
 
 BUILD_END_TMS=$(date '+%s')
 BUILD_DURATION=$(( BUILD_END_TMS - BUILD_START_TMS ))
