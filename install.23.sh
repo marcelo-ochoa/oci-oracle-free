@@ -57,7 +57,9 @@ microdnf -y install libnsl glibc glibc-devel libaio libgcc libstdc++ xz
 
 # Install fortran runtime for libora_netlib.so (so that the Intel Math Kernel libraries are no longer needed)
 if [ "${BUILD_MODE}" == "REGULAR" ] || [ "${BUILD_MODE}" == "SLIM" ]; then
-  microdnf -y install libgfortran
+  if [ "$(arch)" == "x86_64" ]; then F_PKG=compat-libgfortran-48; fi
+  if [ "$(arch)" == "aarch64" ]; then F_PKG=libgfortran; fi
+  microdnf -y install $F_PKG
 fi;
 
 # Install container runtime specific packages
