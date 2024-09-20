@@ -61,7 +61,7 @@ RUN rm -rf "${ORACLE_BASE}"
 ### Layer 2 --> Oracle Home without bin/oracle, lib, rdbms, and FREE.7z
 ##########################################################################################
 
-FROM os_layer as oracle_home
+FROM os_layer AS oracle_home
 
 COPY --from=builder --chown=oracle:oinstall "${ORACLE_BASE}" "${ORACLE_BASE}"
 
