@@ -18,6 +18,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+# Cleanup
+docker manifest rm mochoa/oracle-free:23.5 mochoa/oracle-free:23.5-faststart mochoa/oracle-free:latest 
+docker manifest rm mochoa/oracle-free:23.5-slim mochoa/oracle-free:23.5-slim-faststart 
+docker manifest rm mochoa/oracle-free:23.5-full  mochoa/oracle-free:23.5-full-faststart
 
 # Create a manifest list for the multi-arch image
 docker manifest create mochoa/oracle-free:23.5 \
